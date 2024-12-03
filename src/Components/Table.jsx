@@ -15,9 +15,17 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
     const [selectedId, setSelectedId] = useState(null);
     const [formState, setFormState] = useState("")
 
+    //Validation For form EmPTY
     const formIsEmpty = !formState.name || !formState.email || !formState.username || !formState.city || !formState.website;
 
-
+    //Fields array 
+    const fieldsData = [
+        { label: "Name", name: "name", value: formState.name || "", placeholder: "Name" },
+        { label: "Email", name: "email", value: formState.email || "", placeholder: "Email" },
+        { label: "Username", name: "username", value: formState.username || "", placeholder: "Username" },
+        { label: "City", name: "city", value: formState.city || "", placeholder: "City" },
+        { label: "Website", name: "website", value: formState.website || "", placeholder: "Website" },
+    ]
 
 
     //Handel Delete Function and Cancel btn
@@ -62,22 +70,37 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
 
 
     //HnadelEdit Function
-    const handleEdit = () => {
+    const handleEdit = (user) => {
+        setFormState({
+            name: user.name,
+            email: user.email,
+            username: user.username,
+            city: user.address?.city || "",
+            website: user.website,
+        });
+
+        setSelectedId(user.id);
         setShowEdit(true);
+
     }
 
     const handleEditSubmit = () => {
-        EditUser(selectedId);
-        console.log("edit data",);
-
-    }
-
-
-    useEffect(() => {
-        if (selectedId !== null) {
-            console.log("Selected Id", selectedId);
+        if (formIsEmpty) {
+            alert("form is empty ");
+            return
         }
-    }, [selectedId])
+        const updatedUser = {
+            id: selectedId,
+            name: formState.name,
+            email: formState.email,
+            username: formState.username,
+            address: { city: formState.city },
+            website: formState.website,
+        };
+        EditUser(updatedUser)
+        setShowEdit(false);
+        setFormState({})
+    }
 
 
     const handleInputChange = (e) => {
@@ -92,8 +115,7 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
     return (
         <>
             <Container className="mt-4">
-                <h1 className='d-flex justify-content-center align-items-center'>Api Requests</h1>
-                <Container className="mt-4">
+                                <Container className="mt-4">
                     <div className="d-flex justify-content-between align-items-center">
                         <h2 className="mb-4 text-center">User Data Table</h2>
                         <Button onClick={handelAddNewUder} variant="primary">
@@ -119,15 +141,6 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
                         {Data.length > 0 ? (
                             Data.map((user, index) => (
                                 <tr key={index}>
-                                    {/* <td>{index + 1 ? index + 1 : "N/A"}</td>
-                                    <td>{user.name ? user.name : "N/A"}</td>
-                                    <td>{user.email ? user.email : "N/A"}</td>
-                                    <td>{user.username ? user.username : "N/A"}</td>
-                                    <td>{user.address?.city || "N/A"}</td>
-                                    <td>{user.website ? user.website : "N/A"}</td>
-                                    <td><FontAwesomeIcon onClick={() => handelDelete(user.id)} icon={faTrash} /></td>
-                                    <span>|</span>
-                                    <td><FontAwesomeIcon onClick={handleEdit} icon={faPenToSquare} /></td> */}
                                     <td>{index + 1}</td>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
@@ -136,7 +149,7 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
                                     <td>{user.website}</td>
                                     <td><FontAwesomeIcon onClick={() => handelDelete(user.id)} icon={faTrash} /></td>
                                     <span>|</span>
-                                    <td><FontAwesomeIcon onClick={handleEdit} icon={faPenToSquare} /></td>
+                                    <td><FontAwesomeIcon onClick={() => handleEdit(user)} icon={faPenToSquare} /></td>
                                 </tr>
                             ))) :
                             <div>
@@ -164,13 +177,8 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
                     onSubmit={handleEditSubmit}
                     title="Fill Up the Form To Edit"
                     editBtnText={'Edit User'}
-                    fields={[
-                        { label: "Name", name: "name", value: Data.name, placeholder: "Name" },
-                        { label: "Email", name: "email", value: Data.email, placeholder: "Email" },
-                        { label: "Username", name: "username", value: Data.username, placeholder: "UserName" },
-                        { label: "City", name: "city", value: Data.address?.city, placeholder: "City" },
-                        { label: "Website", name: "website", value: Data.website, placeholder: "Website" },
-                    ]}
+                    fields={fieldsData}
+                    onChange={handleInputChange}
                 />
             )}
 
@@ -184,13 +192,7 @@ function TableData({ Data, DeleteUser, EditUser, AddUser }) {
                     onSubmit={handleAddSubmit}
                     title="Add New User"
                     editBtnText={'Submit'}
-                    fields={[
-                        { label: "Name", name: "name", value: formState.name || "", placeholder: "Name" },
-                        { label: "Email", name: "email", value: formState.email || "", placeholder: "Email" },
-                        { label: "Username", name: "username", value: formState.username || "", placeholder: "Username" },
-                        { label: "City", name: "city", value: formState.city || "", placeholder: "City" },
-                        { label: "Website", name: "website", value: formState.website || "", placeholder: "Website" },
-                    ]}
+                    fields={fieldsData}
                 />
             )}
 

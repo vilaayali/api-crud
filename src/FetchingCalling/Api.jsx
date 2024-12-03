@@ -61,10 +61,13 @@ function Api() {
 
     // Edit function edit and Post items in locally 
     const EditUser = async (userInfo) => {
-        let editUsers = `https://jsonplaceholder.typicode.com/users`;
         try {
-            const response = await axios.post(editUsers, userInfo);
-            console.log("User created:", response.data);
+            const response = await axios.put(`${baseUrl}/users/${userInfo.id}`, userInfo);
+            setData((prevData) =>
+                prevData.map((user) => (user.id === userInfo.id ? response.data : user))
+            );
+
+
 
         } catch (err) {
             console.log('there is an error', err);
